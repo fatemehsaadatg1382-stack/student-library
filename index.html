@@ -1,0 +1,277 @@
+꧁Ŧคtเ, [2/13/2026 11:07 AM]
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>کتابخانه دانشجو</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Tahoma, sans-serif;
+            background-color: #f4f6f9;
+            direction: rtl;
+        }
+
+        header {
+            background-color: #1f2d3d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 950px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #1f2d3d;
+        }
+
+        form input, form select, form textarea, form button {
+            margin: 5px;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        form textarea {
+            resize: none;
+            width: 100%;
+            height: 50px;
+        }
+
+        form button {
+            background-color: #1f2d3d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #16202a;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #1f2d3d;
+            color: white;
+        }
+
+        td img {
+            max-width: 50px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        td button {
+            background-color: #ff4f4f;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        td button:hover {
+            background-color: #e03e3e;
+        }
+
+        .type-book {
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 4px;
+            padding: 2px 4px;
+            display: inline-block;
+        }
+
+        .type-notes {
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 4px;
+            padding: 2px 4px;
+            display: inline-block;
+        }
+
+        .type-article {
+            background-color: #9b59b6;
+            color: white;
+            border-radius: 4px;
+            padding: 2px 4px;
+            display: inline-block;
+        }
+
+        .description {
+            font-size: 12px;
+            color: #333;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>کتابخانه دانشجو</h1>
+</header>
+
+<div class="container">
+    <h2>افزودن کتاب</h2>
+    <form id="bookForm">
+        <input type="text" id="bookName" placeholder="نام کتاب" required>
+        <input type="text" id="author" placeholder="نام نویسنده" required>
+        <select id="type">
+            <option value="کتاب درسی">کتاب درسی</option>
+            <option value="جزوه">جزوه</option>
+            <option value="مقاله">مقاله</option>
+        </select>
+        <input type="text" id="image" placeholder="لینک تصویر کتاب">
+        <textarea id="description" placeholder="توضیح کوتاه درباره کتاب"></textarea>
+        <button type="submit">افزودن</button>
+    </form>
+
+    <input type="text" id="searchInput" placeholder="جستجو بر اساس نام یا نویسنده...">
+
+    <table>
+        <thead>
+            <tr>
+                <th>تصویر</th>
+
+꧁Ŧคtเ, [2/13/2026 11:07 AM]
+<th>نام کتاب</th>
+                <th>نویسنده</th>
+                <th>نوع کتاب</th>
+                <th>توضیح کوتاه</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody id="bookTableBody">
+            <!-- کتاب‌ها اینجا نمایش داده می‌شوند -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+const bookForm = document.getElementById("bookForm");
+const bookTableBody = document.getElementById("bookTableBody");
+const searchInput = document.getElementById("searchInput");
+
+let books = JSON.parse(localStorage.getItem("books")) || [];
+
+// رنگ‌بندی بر اساس نوع
+function getTypeClass(type) {
+    if(type === "کتاب درسی") return "type-book";
+    if(type === "جزوه") return "type-notes";
+    if(type === "مقاله") return "type-article";
+    return "";
+}
+
+// نمایش کتاب‌ها
+function renderBooks(filter="") {
+    bookTableBody.innerHTML = "";
+    books.forEach((book, index) => {
+        if(book.name.includes(filter) || book.author.includes(filter)) {
+            const tr = document.createElement("tr");
+
+            // تصویر
+            const imgTd = document.createElement("td");
+            if(book.image) {
+                const img = document.createElement("img");
+                img.src = book.image;
+                imgTd.appendChild(img);
+            } else {
+                imgTd.textContent = "-";
+            }
+
+            const nameTd = document.createElement("td");
+            nameTd.textContent = book.name;
+
+            const authorTd = document.createElement("td");
+            authorTd.textContent = book.author;
+
+            const typeTd = document.createElement("td");
+            const spanType = document.createElement("span");
+            spanType.textContent = book.type;
+            spanType.className = getTypeClass(book.type);
+            typeTd.appendChild(spanType);
+
+            const descTd = document.createElement("td");
+            descTd.textContent = book.description || "-";
+            descTd.className = "description";
+
+            const actionTd = document.createElement("td");
+            const btn = document.createElement("button");
+            btn.textContent = "حذف";
+            btn.onclick = () => deleteBook(index);
+            actionTd.appendChild(btn);
+
+            tr.appendChild(imgTd);
+            tr.appendChild(nameTd);
+            tr.appendChild(authorTd);
+            tr.appendChild(typeTd);
+            tr.appendChild(descTd);
+            tr.appendChild(actionTd);
+
+            bookTableBody.appendChild(tr);
+        }
+    });
+}
+
+// افزودن کتاب
+bookForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const book = {
+        name: document.getElementById("bookName").value,
+        author: document.getElementById("author").value,
+        type: document.getElementById("type").value,
+        image: document.getElementById("image").value,
+        description: document.getElementById("description").value
+    };
+    books.push(book);
+    localStorage.setItem("books", JSON.stringify(books));
+    bookForm.reset();
+    renderBooks();
+});
+
+// حذف کتاب
+function deleteBook(index) {
+    books.splice(index, 1);
+    localStorage.setItem("books", JSON.stringify(books));
+    renderBooks();
+}
+
+// جستجو
+searchInput.addEventListener("input", () => {
+    renderBooks(searchInput.value);
+});
+
+// نمایش اولیه
+renderBooks();
+</script>
+
+</body>
+</html>
